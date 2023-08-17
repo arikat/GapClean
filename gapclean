@@ -75,7 +75,7 @@ grep ">" $INPUT > $HEADERS_TMP
 echo
 
 # Call the python script with the parsed arguments
-python gapclean.py -i $SEQUENCES_TMP -o $PROCESSED_SEQUENCES_TMP -t "$THRESHOLD"
+python ./bucket/gapclean.py -i $SEQUENCES_TMP -o $PROCESSED_SEQUENCES_TMP -t "$THRESHOLD"
 
 # Combine headers and processed sequences into the output file
 paste -d'\n' $HEADERS_TMP $PROCESSED_SEQUENCES_TMP > $OUTPUT
