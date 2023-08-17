@@ -5,7 +5,7 @@
 GapClean takes a gappy multiple sequence alignment and removes columns with gaps at a  
 specified threshold value to produce a "cleaner" and easier to visualize sequence alignment.  
 
-#### Usage: $0 [options]
+#### Usage: gapclean [options]
 
    `-i`   Input file       (Required)
 
@@ -23,8 +23,8 @@ specified threshold value to produce a "cleaner" and easier to visualize sequenc
   
 ## INSTALLATION:
 
-1. Download gapclean and the bucket folder and copy both to your local bin.
+1. Download gapclean and the bucket folder and copy both to your local bin (EG: `/usr/local/bin/`)
 
-2. chmod +x gapclean
+2. `chmod +x gapclean`
 
 3. scrub behind your ears
