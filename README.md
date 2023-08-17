@@ -1,4 +1,4 @@
-# GapClean (v0.4)
+# GapClean (v0.5)
 ###### Written by Aarya Venkat
 
 #### Description:  

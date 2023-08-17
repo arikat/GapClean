@@ -6,7 +6,7 @@ display_help() {
     echo
     echo "  ====================================================  "
     echo
-    echo "                      GapClean (v0.4)                   "
+    echo "                      GapClean (v0.5)                   "
     echo
     echo "                  Written by Aarya Venkat               "
     echo
@@ -60,25 +60,32 @@ if [ -z "$INPUT" ] || [ -z "$OUTPUT" ]; then
     exit 1
 fi
 
-echo
-
 # Dynamic naming based on the input name
+NEWLINE_TMP="${INPUT}.newline.txt"
 HEADERS_TMP="${INPUT}.headers.txt"
 SEQUENCES_TMP="${INPUT}.sequences.txt"
 PROCESSED_SEQUENCES_TMP="${INPUT}.sequences.processed.txt"
 
+echo 
+
+perl ${0%gapclean}bucket/remove_newline.pl $INPUT > $NEWLINE_TMP
+
+echo "Initial cleanup of newlines from fasta sequence"
+
+echo
+
 echo "splitting $INPUT into sequences and headers"
 
-grep -v ">" $INPUT > $SEQUENCES_TMP
-grep ">" $INPUT > $HEADERS_TMP
+grep -v ">" $NEWLINE_TMP > $SEQUENCES_TMP
+grep ">" $NEWLINE_TMP > $HEADERS_TMP
 
 echo
 
 # Call the python script with the parsed arguments
-python ./bucket/gapclean.py -i $SEQUENCES_TMP -o $PROCESSED_SEQUENCES_TMP -t "$THRESHOLD"
+python ${0%gapclean}bucket/gapclean.py -i $SEQUENCES_TMP -o $PROCESSED_SEQUENCES_TMP -t "$THRESHOLD"
 
 # Combine headers and processed sequences into the output file
 paste -d'\n' $HEADERS_TMP $PROCESSED_SEQUENCES_TMP > $OUTPUT
 
 # Remove temporary files
-rm $HEADERS_TMP $SEQUENCES_TMP $PROCESSED_SEQUENCES_TMP
+rm $HEADERS_TMP $SEQUENCES_TMP $PROCESSED_SEQUENCES_TMP $NEWLINE_TMP
