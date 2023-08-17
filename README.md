@@ -15,8 +15,11 @@ produce a "cleaner" and easier to visualize sequence alignment.
 Usage: $0 [options]
 
    -i   Input file       Required.
+
    -o   Output file      Required.
+
    -t   Threshold value  Optional. Default is 99.
+
    -h   Display this help message.
 
 
