@@ -1,5 +1,6 @@
-# GapClean (v0.5)
+# GapClean (v0.5) 
 ###### Written by Aarya Venkat
+<img src="gapclean.png" width="350">
 
 #### Description:  
 GapClean takes a gappy multiple sequence alignment and removes columns with gaps at a  
@@ -17,8 +18,6 @@ specified threshold value to produce a "cleaner" and easier to visualize sequenc
 
 
 #####  Example: `gapclean -i input.fa -o output.fa -t 95`
-  
-  
   
   
 ## INSTALLATION:
