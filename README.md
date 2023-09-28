@@ -26,4 +26,4 @@ specified threshold value to produce a "cleaner" and easier to visualize sequenc
 
 2. `chmod +x gapclean`
 
-3. scrub behind your ears
+3. Say thank you to Gappy. She works really hard.
