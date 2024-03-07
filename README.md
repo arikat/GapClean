@@ -6,7 +6,7 @@
 GapClean takes a gappy multiple sequence alignment and removes columns with gaps at a  
 specified threshold value to produce a "cleaner" and easier to visualize sequence alignment.
 
-Can also be used to generate alignments relative to a seed sequence to assess site-wise mutational
+Can also be used to remove gaps in an alignment relative to a seed sequence to assess site-wise mutational
 information.  
 
 #### Usage: gapclean [options]
