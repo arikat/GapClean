@@ -5,7 +5,7 @@ display_help() {
     echo
     echo "  ====================================================  "
     echo
-    echo "                      GapClean (v0.5)                   "
+    echo "                      GapClean (v0.7)                   "
     echo
     echo "                  Written by Aarya Venkat               "
     echo
