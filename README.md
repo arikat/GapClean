@@ -4,7 +4,10 @@
 
 #### Description:  
 GapClean takes a gappy multiple sequence alignment and removes columns with gaps at a  
-specified threshold value to produce a "cleaner" and easier to visualize sequence alignment.  
+specified threshold value to produce a "cleaner" and easier to visualize sequence alignment.
+
+Can also be used to generate alignments relative to a seed sequence to assess site-wise mutational
+information.  
 
 #### Usage: gapclean [options]
 
@@ -12,12 +15,17 @@ specified threshold value to produce a "cleaner" and easier to visualize sequenc
 
    `-o`   Output file      (Required)
 
-   `-t`   Threshold value  (Optional) Default is 99.
+   `-t`   Threshold value  (Optional) Cannot be used with seed argument
+
+   `-s`   Seed index       (Optional) Cannot be used with threshold argument
 
    `-h`   Display this help message
 
 
 #####  Example: `gapclean -i input.fa -o output.fa -t 95`
+
+#####  Example: `gapclean -i input.fa -o output.fa -s 0` # Takes the first sequence in an alignment as the seed and removes gaps relative to the seed.
+
   
   
 ## INSTALLATION:
