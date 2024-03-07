@@ -3,7 +3,6 @@
 # Function to display help
 display_help() {
     echo
-    echo
     echo "  ====================================================  "
     echo
     echo "                      GapClean (v0.5)                   "
@@ -13,18 +12,19 @@ display_help() {
     echo "  ====================================================  "
     echo
     echo "Description: GapClean takes a gappy multiple sequence alignment"
-    echo "and removes columns with gaps at a specified threshold value to"
-    echo "produce a \"cleaner\" and easier to visualize sequence alignment."
+    echo "and removes columns with gaps based on a specified threshold value or a seed sequence"
+    echo "to produce a \"cleaner\" and easier to visualize sequence alignment."
     echo
     echo "Usage: $0 [options]"
     echo
-    echo "   -i   Input file       Required."
-    echo "   -o   Output file      Required."
-    echo "   -t   Threshold value  Optional. Default is 99."
+    echo "   -i   Input file            Required."
+    echo "   -o   Output file           Required."
+    echo "   -t   Threshold value       Optional. Cannot be used with -s."
+    echo "   -s   Seed sequence index   Optional. Cannot be used with -t."
     echo "   -h   Display this help message."
     echo
-    echo
-    echo "  Example: gapclean -i input.fa -o output.fa -t 95  "
+    echo "  Example: gapclean -i input.fa -o output.fa -t 95"
+    echo "  Example: gapclean -i input.fa -o output.fa -s 0"
     echo
     exit 1
 }
@@ -32,16 +32,19 @@ display_help() {
 # Initialize variables
 INPUT=""
 OUTPUT=""
-THRESHOLD=99  # Default value
+THRESHOLD=""  # No default value to allow checking if set
+SEED=""
 
 # Parse command line arguments
-while getopts "i:o:t:h" opt; do
+while getopts "i:o:t:s:h" opt; do
   case $opt in
     i) INPUT="$OPTARG"
     ;;
     o) OUTPUT="$OPTARG"
     ;;
     t) THRESHOLD="$OPTARG"
+    ;;
+    s) SEED="$OPTARG"
     ;;
     h) display_help
     ;;
@@ -56,7 +59,14 @@ if [ -z "$INPUT" ] || [ -z "$OUTPUT" ]; then
     echo "Invalid options. -i (input) and -o (output) are required."
     echo
     display_help
+    exit 1
+fi
+
+# Check for mutual exclusivity of -t and -s
+if [ -n "$THRESHOLD" ] && [ -n "$SEED" ]; then
+    echo "Options -t (threshold) and -s (seed sequence index) cannot be used together."
     echo
+    display_help
     exit 1
 fi
 
@@ -66,7 +76,7 @@ HEADERS_TMP="${INPUT}.headers.txt"
 SEQUENCES_TMP="${INPUT}.sequences.txt"
 PROCESSED_SEQUENCES_TMP="${INPUT}.sequences.processed.txt"
 
-echo 
+echo
 
 perl ${0%gapclean}bucket/remove_newline.pl $INPUT > $NEWLINE_TMP
 
@@ -81,11 +91,21 @@ grep ">" $NEWLINE_TMP > $HEADERS_TMP
 
 echo
 
-# Call the python script with the parsed arguments
-python ${0%gapclean}bucket/gapclean.py -i $SEQUENCES_TMP -o $PROCESSED_SEQUENCES_TMP -t "$THRESHOLD"
+# Construct the command dynamically based on provided options
+CMD="python ${0%gapclean}bucket/gapclean.py -i $SEQUENCES_TMP -o $PROCESSED_SEQUENCES_TMP"
+if [ -n "$THRESHOLD" ]; then
+    CMD+=" -t $THRESHOLD"
+elif [ -n "$SEED" ]; then
+    CMD+=" -s $SEED"
+fi
+
+# Call the python script with the constructed command
+eval $CMD
 
 # Combine headers and processed sequences into the output file
 paste -d'\n' $HEADERS_TMP $PROCESSED_SEQUENCES_TMP > $OUTPUT
 
 # Remove temporary files
 rm $HEADERS_TMP $SEQUENCES_TMP $PROCESSED_SEQUENCES_TMP $NEWLINE_TMP
+
+echo "GapClean process completed."
