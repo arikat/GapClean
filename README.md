@@ -24,7 +24,7 @@ information.
 
 #####  Example: `gapclean -i input.fa -o output.fa -t 95`
 
-#####  Example: `gapclean -i input.fa -o output.fa -s 0` # Takes the first sequence in an alignment as the seed and removes gaps relative to the seed.
+#####  Example: `gapclean -i input.fa -o output.fa -s 0` # Takes first sequence as the seed and removes gaps relative to seed.
 
   
   
