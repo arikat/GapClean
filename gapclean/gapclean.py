@@ -164,7 +164,7 @@ def main():
     parser = argparse.ArgumentParser(
     description="""\n                               
     ===============================================\n
-    GapClean (v1.0.1), written by Aarya Venkat, PhD\n 
+    GapClean (v1.0.2), written by Aarya Venkat, PhD\n 
     ===============================================\n                                                              
     Process a sequence file to either remove gaps in columns exceeding a certain\n
     threshold across all sequences or based on gaps in a specified seed sequence.""", 
@@ -172,15 +172,15 @@ def main():
     )
 
 
-    parser.add_argument('-i', '--input',  help='Input FASTA', required=True)
-    parser.add_argument('-o', '--output', help='Output FASTA', required=True)
+    parser.add_argument('-i', '--input',  help='Input aligned fasta', required=True)
+    parser.add_argument('-o', '--output', help='Output gapcleaned fasta', required=True)
 
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-t', '--threshold', help='Threshold for gap removal across all sequences (eg -t 60 for 60 percent threshold)', type=int)
+    group.add_argument('-t', '--threshold', help='Threshold for gap removal (eg -t 60 for 60 percent)', type=int)
     group.add_argument('-s', '--seed', help='Index of the seed sequence (0-based) for gap removal based on this sequence only', type=int)
 
-    parser.add_argument('--row-chunk-size', type=int, default=5000)
-    parser.add_argument('--col-chunk-size', type=int, default=5000)
+    parser.add_argument('--row-chunk-size', help='number of sequences to hold in memory at once (default 5000)', type=int, default=5000)
+    parser.add_argument('--col-chunk-size', help='number of columns to hold in memory at once (default 5000)', type=int, default=5000)
 
     args = parser.parse_args()
 
@@ -188,12 +188,12 @@ def main():
 
     print()
     print("  ====================================================  ")
-    print("                     GapClean (v1.0.1)                  ")
+    print("                     GapClean (v1.0.2)                  ")
     print("                     Aarya Venkat, PhD                  ")
     print("  ====================================================  ")
     print()
 
-    # 1) Flatten multiline FASTA with AWK
+    # 1) Flatten multiline fasta with awk (per sequence awk seems to be about 2% faster than prev perl script -- adds up for big fasta files)
     tmpdir = tempfile.mkdtemp(prefix="gapclean_awk_")
     FLATTENED_FASTA = os.path.join(tmpdir, "flattened.fa")
     HEADERS_TMP = os.path.join(tmpdir, "headers.fa")

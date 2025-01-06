@@ -1,4 +1,4 @@
-# GapClean (v1.0.1) 
+# GapClean (v1.0.2) 
 ###### Written by Aarya Venkat, PhD
 <img src="gapclean.png" width="350">
 
