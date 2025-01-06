@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gapclean"
+version = "1.0.0"
+description = "Clean up large gappy multiple sequence alignments."
+readme = "README.md"
+
+authors = [
+  { name = "Aarya Venkat" },
+]
+
+license = "MIT"
+requires-python = ">=3.6"
+
+dependencies = [
+  "tqdm",
+  "numpy"
+]
+
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent"
+]
+keywords = ["sequence alignment", "bioinformatics, computational biology, protein"]
+
+[project.scripts]
+gapclean = "gapclean.gapclean:main"
+
+[project.urls]
+Github = "https://github.com/arikat/GapClean"
+Homepage = "https://aaryakat.com"
