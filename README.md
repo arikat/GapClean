@@ -1,4 +1,4 @@
-# GapClean (v1.0) 
+# GapClean (v1.0.1) 
 ###### Written by Aarya Venkat, PhD
 <img src="gapclean.png" width="350">
 
@@ -22,16 +22,14 @@ information.
    `-h`   Display this help message
 
 
-#####  Example: `gapclean -i input.fa -o output.fa -t 95`
+#####  Example: `gapclean -i input.fa -o output.fa -t 75` Removes column from alignment when >75 percent of the column are gaps 
 
-#####  Example: `gapclean -i input.fa -o output.fa -s 0` # Takes first sequence as the seed and removes gaps relative to seed.
+#####  Example: `gapclean -i input.fa -o output.fa -s 0` Takes first sequence as the seed and removes gaps relative to seed.
 
   
   
 ## INSTALLATION:
 
-1. git clone this repo
+1. pip install gapclean
 
-2. pip install .
-
-3. Thank Gappy for his service. He is a retired detective.
+2. Thank Gappy for his service. He is a retired detective.

@@ -163,9 +163,9 @@ def recombine_headers_and_sequences(headers_file, sequences_file, output_fasta):
 def main():
     parser = argparse.ArgumentParser(
     description="""\n                               
-    =============================================\n
-    GapClean (v1.0), written by Aarya Venkat, PhD\n 
-    =============================================\n                                                              
+    ===============================================\n
+    GapClean (v1.0.1), written by Aarya Venkat, PhD\n 
+    ===============================================\n                                                              
     Process a sequence file to either remove gaps in columns exceeding a certain\n
     threshold across all sequences or based on gaps in a specified seed sequence.""", 
     formatter_class=argparse.RawTextHelpFormatter
@@ -188,7 +188,7 @@ def main():
 
     print()
     print("  ====================================================  ")
-    print("                      GapClean (v1.0)                   ")
+    print("                     GapClean (v1.0.1)                  ")
     print("                     Aarya Venkat, PhD                  ")
     print("  ====================================================  ")
     print()
