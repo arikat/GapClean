@@ -22,14 +22,16 @@ information.
    `-h`   Display this help message
 
 
-#####  Example: `gapclean -i input.fa -o output.fa -t 75` Removes column from alignment when >75 percent of the column are gaps 
+#####  Example: `gapclean -i input.fa -o output.fa -t 75` 
+Removes column from alignment when >75 percent of the column are gaps 
 
-#####  Example: `gapclean -i input.fa -o output.fa -s 0` Takes first sequence as the seed and removes gaps relative to seed.
+#####  Example: `gapclean -i input.fa -o output.fa -s 0` 
+Takes first sequence as the seed and removes gaps relative to seed.
 
   
   
 ## INSTALLATION:
 
-1. pip install gapclean
+1. `pip install gapclean`
 
 2. Thank Gappy for his service. He is a retired detective.
