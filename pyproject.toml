@@ -9,7 +9,7 @@ description = "Clean up large gappy multiple sequence alignments."
 readme = "README.md"
 
 authors = [
-  { name = "Aarya Venkat" },
+  { name = "Aarya Venkat, PhD" },
 ]
 
 license = "MIT"
