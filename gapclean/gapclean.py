@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# gapclean/gapclean.py
 
 import argparse
 import os
@@ -161,12 +161,22 @@ def recombine_headers_and_sequences(headers_file, sequences_file, output_fasta):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Process a sequence file to either remove gaps in columns exceeding a threshold across all sequences or based on gaps in a specified seed sequence.")
+    parser = argparse.ArgumentParser(
+    description="""\n                               
+    =============================================\n
+    GapClean (v1.0), written by Aarya Venkat, PhD\n 
+    =============================================\n                                                              
+    Process a sequence file to either remove gaps in columns exceeding a certain\n
+    threshold across all sequences or based on gaps in a specified seed sequence.""", 
+    formatter_class=argparse.RawTextHelpFormatter
+    )
+
+
     parser.add_argument('-i', '--input',  help='Input FASTA', required=True)
     parser.add_argument('-o', '--output', help='Output FASTA', required=True)
 
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-t', '--threshold', help='Threshold for gap removal across all sequences (percentage, without the \'%\' sign)', type=int)
+    group.add_argument('-t', '--threshold', help='Threshold for gap removal across all sequences (eg -t 60 for 60 percent threshold)', type=int)
     group.add_argument('-s', '--seed', help='Index of the seed sequence (0-based) for gap removal based on this sequence only', type=int)
 
     parser.add_argument('--row-chunk-size', type=int, default=5000)
@@ -179,7 +189,7 @@ def main():
     print()
     print("  ====================================================  ")
     print("                      GapClean (v1.0)                   ")
-    print("                Written by Aarya Venkat, PhD            ")
+    print("                     Aarya Venkat, PhD                  ")
     print("  ====================================================  ")
     print()
 

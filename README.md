@@ -30,8 +30,8 @@ information.
   
 ## INSTALLATION:
 
-1. Download gapclean and the bucket folder and copy both to your local bin (EG: `/usr/local/bin/`)
+1. git clone this repo
 
-2. `chmod +x gapclean`
+2. pip install .
 
 3. Thank Gappy for his service. He is a retired detective.
