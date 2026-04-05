@@ -45,13 +45,14 @@ GapClean is a memory-efficient tool for cleaning gappy multiple sequence alignme
 
 Benchmarks on Apple M1 (16 GB RAM) using Pfam protein families (70% gap threshold):
 
-| Scale | Dataset | Sequences | Positions | Time | Size |
-|-------|---------|-----------|-----------|------|------|
-| Tiny | PF08087 (Conotoxin) | 42 | 36 | <0.1s | 2 KB |
-| Medium | PF00535 (GT2) | 157,052 | 1,285 | 11s | 206 MB |
-| **Large** | **PF00069 (Kinase)** | **1,051,876** | **3,667** | **35s** | **7 GB** |
+| Scale | Pfam | Sequences | Length | Time | Size |
+|-------|------|-----------|--------|------|------|
+| Tiny | PF15608 | 931 | 148 | <0.1s | 215 KB |
+| Small | PF00637 | 38,583 | 648 | 2s | 27 MB |
+| Medium | PF00535 | 157,052 | 1,285 | 11s | 206 MB |
+| **Large** | **PF00069** | **1,051,876** | **3,667** | **35s** | **7 GB** |
 
-Processing time scales linearly with alignment size (R² = 0.998). From tiny families (42 sequences) to million-sequence datasets with negligible overhead.
+Processing time scales linearly with alignment size. From small families (931 sequences) to million-sequence datasets with negligible overhead.
 
 ## Installation
 

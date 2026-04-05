@@ -14,7 +14,7 @@ def test_cli_threshold_mode(valid_alignment, output_file):
     )
 
     assert result.returncode == 0
-    assert "GapClean (v1.0.3)" in result.stdout
+    assert "GapClean (v1.0.5)" in result.stdout
     assert "Final alignment length" in result.stdout
 
     # Check output file was created
@@ -34,7 +34,7 @@ def test_cli_seed_mode(valid_alignment, output_file):
     )
 
     assert result.returncode == 0
-    assert "GapClean (v1.0.3)" in result.stdout
+    assert "GapClean (v1.0.5)" in result.stdout
     assert "seed seq index=0" in result.stdout
 
 
@@ -47,7 +47,7 @@ def test_cli_entropy_min_mode(valid_alignment, output_file):
     )
 
     assert result.returncode == 0
-    assert "GapClean (v1.0.3)" in result.stdout
+    assert "GapClean (v1.0.5)" in result.stdout
     assert "entropy" in result.stdout.lower()
 
 
@@ -60,7 +60,7 @@ def test_cli_entropy_max_mode(valid_alignment, output_file):
     )
 
     assert result.returncode == 0
-    assert "GapClean (v1.0.3)" in result.stdout
+    assert "GapClean (v1.0.5)" in result.stdout
     assert "entropy" in result.stdout.lower()
 
 

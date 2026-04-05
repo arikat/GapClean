@@ -68,5 +68,6 @@ nav:
     - Performance Tuning: advanced/performance.md
     - Memory Management: advanced/memory.md
   - API Reference: api/reference.md
+  - Technical Paper: paper.md
   - Changelog: changelog.md
   - Contributing: contributing.md
