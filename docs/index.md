@@ -6,10 +6,14 @@ Clean up large gappy multiple sequence alignments with memory-efficient processi
 
 - **Memory Efficient**: Process massive alignments with 2D chunking algorithm
 - **Fast**: Optimized NumPy operations for gap detection
+- **Scalable**: Handles million-sequence datasets (1M+ sequences in 35 seconds)
 - **Flexible**: Three removal modes (threshold, seed, entropy)
 - **Cross-Platform**: Pure Python implementation (Windows, macOS, Linux)
+- **Python API**: Simple one-function interface for notebooks and pipelines
 
-## Quick Example
+## Quick Examples
+
+### Command Line
 
 ```bash
 # Remove columns with >75% gaps
@@ -18,8 +22,23 @@ gapclean -i alignment.fa -o cleaned.fa -t 75
 # Remove gaps relative to first sequence
 gapclean -i alignment.fa -o cleaned.fa -s 0
 
-# Remove low-entropy columns
-gapclean -i alignment.fa -o cleaned.fa -e 1.5
+# Remove variable columns (keep conserved)
+gapclean -i alignment.fa -o cleaned.fa --entropy-max 1.5
+```
+
+### Python API (NEW in v1.0.4!)
+
+```python
+from gapclean import clean_alignment
+
+# One function call - that's it!
+stats = clean_alignment(
+    input_file='alignment.fa',
+    output_file='cleaned.fa',
+    threshold=75
+)
+
+print(f"Removed {stats['columns_removed']} columns")
 ```
 
 ## Features
@@ -39,10 +58,14 @@ gapclean -i input.fa -o output.fa -s 0
 ```
 
 ### Entropy Mode
-Remove low-diversity columns using Shannon entropy.
+Remove columns based on Shannon entropy (diversity).
 
 ```bash
-gapclean -i input.fa -o output.fa -e 1.5
+# Keep variable regions (remove conserved)
+gapclean -i input.fa -o output.fa --entropy-min 1.0
+
+# Keep conserved regions (remove variable)
+gapclean -i input.fa -o output.fa --entropy-max 1.5
 ```
 
 ## How It Works

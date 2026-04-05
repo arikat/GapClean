@@ -35,7 +35,7 @@ def test_calculate_entropy_four_chars():
 
 
 def test_entropy_mode_removes_low_entropy_columns(conserved_alignment, output_file, tmp_path):
-    """Test that entropy mode removes low entropy (conserved) columns."""
+    """Test that entropy-min mode removes low entropy (conserved) columns."""
     flat_file = str(tmp_path / "flat.fa")
     headers_file = str(tmp_path / "headers.fa")
     seqs_file = str(tmp_path / "seqs.fa")
@@ -44,18 +44,18 @@ def test_entropy_mode_removes_low_entropy_columns(conserved_alignment, output_fi
     split_headers_vs_sequences(flat_file, headers_file, seqs_file)
 
     # conserved_alignment has all same characters (entropy = 0)
-    # Remove columns with entropy < 0.5
-    gapclean_2d_chunk(seqs_file, output_file, entropy_threshold=0.5)
+    # Remove columns with entropy < 0.5 (removes conserved, keeps variable)
+    gapclean_2d_chunk(seqs_file, output_file, entropy_min=0.5)
 
     with open(output_file, 'r') as f:
         lines = f.readlines()
 
-    # All columns should be removed (all have entropy 0)
+    # All columns should be removed (all have entropy 0 < 0.5)
     assert all(len(line.strip()) == 0 for line in lines)
 
 
 def test_entropy_mode_keeps_high_entropy_columns(variable_alignment, output_file, tmp_path):
-    """Test that entropy mode keeps high entropy (variable) columns."""
+    """Test that entropy-min mode keeps high entropy (variable) columns."""
     flat_file = str(tmp_path / "flat.fa")
     headers_file = str(tmp_path / "headers.fa")
     seqs_file = str(tmp_path / "seqs.fa")
@@ -64,11 +64,51 @@ def test_entropy_mode_keeps_high_entropy_columns(variable_alignment, output_file
     split_headers_vs_sequences(flat_file, headers_file, seqs_file)
 
     # variable_alignment has 4 different chars each column (entropy = 2.0)
-    # Keep columns with entropy >= 0.5
-    gapclean_2d_chunk(seqs_file, output_file, entropy_threshold=0.5)
+    # Remove columns with entropy < 0.5 (all columns have entropy ~2.0, so keep all)
+    gapclean_2d_chunk(seqs_file, output_file, entropy_min=0.5)
 
     with open(output_file, 'r') as f:
         lines = f.readlines()
 
-    # All columns should be kept (all have high entropy)
+    # All columns should be kept (all have high entropy > 0.5)
+    assert all(len(line.strip()) == 8 for line in lines)
+
+
+def test_entropy_max_removes_variable_columns(variable_alignment, output_file, tmp_path):
+    """Test that entropy-max mode removes high entropy (variable) columns."""
+    flat_file = str(tmp_path / "flat.fa")
+    headers_file = str(tmp_path / "headers.fa")
+    seqs_file = str(tmp_path / "seqs.fa")
+
+    flatten_fasta(variable_alignment, flat_file)
+    split_headers_vs_sequences(flat_file, headers_file, seqs_file)
+
+    # variable_alignment has 4 different chars each column (entropy ~2.0)
+    # Remove columns with entropy > 0.5 (removes variable, keeps conserved)
+    gapclean_2d_chunk(seqs_file, output_file, entropy_max=0.5)
+
+    with open(output_file, 'r') as f:
+        lines = f.readlines()
+
+    # All columns should be removed (all have entropy ~2.0 > 0.5)
+    assert all(len(line.strip()) == 0 for line in lines)
+
+
+def test_entropy_max_keeps_conserved_columns(conserved_alignment, output_file, tmp_path):
+    """Test that entropy-max mode keeps low entropy (conserved) columns."""
+    flat_file = str(tmp_path / "flat.fa")
+    headers_file = str(tmp_path / "headers.fa")
+    seqs_file = str(tmp_path / "seqs.fa")
+
+    flatten_fasta(conserved_alignment, flat_file)
+    split_headers_vs_sequences(flat_file, headers_file, seqs_file)
+
+    # conserved_alignment has all same characters (entropy = 0)
+    # Remove columns with entropy > 0.5 (all have entropy 0 < 0.5, so keep all)
+    gapclean_2d_chunk(seqs_file, output_file, entropy_max=0.5)
+
+    with open(output_file, 'r') as f:
+        lines = f.readlines()
+
+    # All columns should be kept (all have entropy 0 < 0.5)
     assert all(len(line.strip()) == 8 for line in lines)

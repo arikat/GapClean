@@ -16,7 +16,8 @@ requires-python = ">=3.8"
 
 dependencies = [
   "tqdm",
-  "numpy"
+  "numpy",
+  "biopython>=1.80"
 ]
 
 classifiers = [
@@ -49,6 +50,11 @@ docs = [
 
 [tool.setuptools.dynamic]
 version = {attr = "gapclean.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["gapclean*"]
+exclude = ["tests*", "paper*", "site*", "docs*", "examples*"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"

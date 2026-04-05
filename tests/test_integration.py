@@ -38,10 +38,23 @@ def test_cli_seed_mode(valid_alignment, output_file):
     assert "seed seq index=0" in result.stdout
 
 
-def test_cli_entropy_mode(valid_alignment, output_file):
-    """Test CLI with entropy mode."""
+def test_cli_entropy_min_mode(valid_alignment, output_file):
+    """Test CLI with entropy-min mode."""
     result = subprocess.run(
-        [sys.executable, "-m", "gapclean.gapclean", "-i", valid_alignment, "-o", output_file, "-e", "1.0"],
+        [sys.executable, "-m", "gapclean.gapclean", "-i", valid_alignment, "-o", output_file, "--entropy-min", "1.0"],
+        capture_output=True,
+        text=True
+    )
+
+    assert result.returncode == 0
+    assert "GapClean (v1.0.3)" in result.stdout
+    assert "entropy" in result.stdout.lower()
+
+
+def test_cli_entropy_max_mode(valid_alignment, output_file):
+    """Test CLI with entropy-max mode."""
+    result = subprocess.run(
+        [sys.executable, "-m", "gapclean.gapclean", "-i", valid_alignment, "-o", output_file, "--entropy-max", "1.0"],
         capture_output=True,
         text=True
     )
@@ -87,4 +100,5 @@ def test_cli_help():
     assert "GapClean" in result.stdout
     assert "--threshold" in result.stdout
     assert "--seed" in result.stdout
-    assert "--entropy" in result.stdout
+    assert "--entropy-min" in result.stdout
+    assert "--entropy-max" in result.stdout

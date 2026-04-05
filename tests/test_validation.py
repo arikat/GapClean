@@ -104,20 +104,31 @@ def test_validate_seed_index_none():
 
 def test_validate_entropy_threshold_valid():
     """Test validation passes for valid entropy thresholds."""
-    validate_entropy_threshold(0.0)
-    validate_entropy_threshold(1.5)
-    validate_entropy_threshold(4.0)
+    validate_entropy_threshold(0.0, None)
+    validate_entropy_threshold(None, 1.5)
+    validate_entropy_threshold(1.0, 2.0)
+    validate_entropy_threshold(None, None)
 
 
-def test_validate_entropy_threshold_negative():
-    """Test validation fails for negative entropy threshold."""
+def test_validate_entropy_min_negative():
+    """Test validation fails for negative entropy min."""
     with pytest.raises(InputValidationError, match="non-negative"):
-        validate_entropy_threshold(-0.1)
+        validate_entropy_threshold(-0.1, None)
 
 
-def test_validate_entropy_threshold_none():
-    """Test validation passes for None entropy threshold."""
-    validate_entropy_threshold(None)  # Should not raise
+def test_validate_entropy_max_negative():
+    """Test validation fails for negative entropy max."""
+    with pytest.raises(InputValidationError, match="non-negative"):
+        validate_entropy_threshold(None, -0.1)
+
+
+def test_validate_entropy_min_greater_than_max():
+    """Test validation fails when min >= max."""
+    with pytest.raises(InputValidationError, match="must be less than"):
+        validate_entropy_threshold(2.0, 1.0)
+
+    with pytest.raises(InputValidationError, match="must be less than"):
+        validate_entropy_threshold(1.5, 1.5)
 
 
 def test_validate_chunk_sizes_valid():

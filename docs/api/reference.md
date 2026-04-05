@@ -8,7 +8,116 @@ GapClean can be imported as a Python library for programmatic use.
 pip install gapclean
 ```
 
-## Importing
+## High-Level API (Recommended)
+
+**NEW in v1.0.4:** Simple one-function interface for most use cases.
+
+### Importing
+
+```python
+from gapclean import clean_alignment
+```
+
+### clean_alignment()
+
+Clean gaps from a multiple sequence alignment with a single function call.
+
+```python
+def clean_alignment(
+    input_file: str,
+    output_file: str,
+    threshold: Optional[int] = None,
+    seed_index: Optional[int] = None,
+    entropy_min: Optional[float] = None,
+    entropy_max: Optional[float] = None,
+    row_chunk_size: int = 5000,
+    col_chunk_size: int = 5000,
+    verbose: bool = True
+) -> dict
+```
+
+**Parameters:**
+
+- `input_file` (str): Path to input FASTA alignment file
+- `output_file` (str): Path to output cleaned FASTA file
+- `threshold` (int, optional): Remove columns with >X% gaps (0-100). Mutually exclusive.
+- `seed_index` (int, optional): Remove gaps relative to sequence at this index (0-based). Mutually exclusive.
+- `entropy_min` (float, optional): Remove columns with entropy < X bits (keep variable). Mutually exclusive.
+- `entropy_max` (float, optional): Remove columns with entropy > X bits (keep conserved). Mutually exclusive.
+- `row_chunk_size` (int): Number of sequences to process at once (default: 5000)
+- `col_chunk_size` (int): Number of alignment columns to process at once (default: 5000)
+- `verbose` (bool): Print progress messages (default: True)
+
+**Returns:**
+
+Dictionary with statistics:
+
+- `input_sequences` (int): Number of input sequences
+- `input_length` (int): Original alignment length
+- `output_length` (int): Cleaned alignment length
+- `columns_removed` (int): Number of columns removed
+- `elapsed_seconds` (float): Time taken in seconds
+
+**Raises:**
+
+- `InputValidationError`: If input parameters are invalid
+- `AlignmentError`: If alignment processing fails
+
+**Examples:**
+
+```python
+from gapclean import clean_alignment
+
+# Threshold mode - remove columns with >50% gaps
+stats = clean_alignment('input.fa', 'output.fa', threshold=50)
+print(f"Removed {stats['columns_removed']} columns")
+
+# Seed mode - remove gaps relative to first sequence
+stats = clean_alignment('input.fa', 'output.fa', seed_index=0)
+
+# Entropy mode - keep only conserved regions
+stats = clean_alignment('input.fa', 'output.fa', entropy_max=1.5)
+
+# Entropy mode - keep only variable regions
+stats = clean_alignment('input.fa', 'output.fa', entropy_min=1.0)
+
+# Quiet mode for pipelines
+stats = clean_alignment('input.fa', 'output.fa', threshold=75, verbose=False)
+
+# Custom chunk sizes for memory tuning
+stats = clean_alignment(
+    'input.fa', 'output.fa',
+    threshold=50,
+    row_chunk_size=1000,
+    col_chunk_size=1000
+)
+```
+
+**Pipeline Example:**
+
+```python
+from pathlib import Path
+from gapclean import clean_alignment
+
+# Process multiple alignments
+for input_file in Path('alignments').glob('*.fa'):
+    output_file = Path('cleaned') / input_file.name
+    stats = clean_alignment(
+        str(input_file),
+        str(output_file),
+        threshold=50,
+        verbose=False
+    )
+    print(f"{input_file.name}: {stats['columns_removed']} columns removed")
+```
+
+---
+
+## Low-Level API (Advanced)
+
+For advanced users who need fine-grained control.
+
+### Importing
 
 ```python
 from gapclean.gapclean import (
@@ -20,7 +129,7 @@ from gapclean.gapclean import (
 )
 ```
 
-## Functions
+### Functions
 
 ### flatten_fasta()
 
@@ -83,7 +192,8 @@ def gapclean_2d_chunk(
     output_sequences_file: str,
     threshold: Optional[int] = None,
     seed_index: Optional[int] = None,
-    entropy_threshold: Optional[float] = None,
+    entropy_min: Optional[float] = None,
+    entropy_max: Optional[float] = None,
     row_chunk_size: int = 5000,
     col_chunk_size: int = 5000
 ) -> None
@@ -95,11 +205,12 @@ def gapclean_2d_chunk(
 - `output_sequences_file` (str): Path to output file for cleaned sequences
 - `threshold` (int, optional): Percentage threshold (0-100) for gap removal
 - `seed_index` (int, optional): Remove columns with gaps in seed sequence (0-based index)
-- `entropy_threshold` (float, optional): Remove columns with entropy < threshold bits
+- `entropy_min` (float, optional): Remove columns with entropy < threshold bits (keeps variable)
+- `entropy_max` (float, optional): Remove columns with entropy > threshold bits (keeps conserved)
 - `row_chunk_size` (int): Number of sequences to process at once (default: 5000)
 - `col_chunk_size` (int): Number of alignment columns to process at once (default: 5000)
 
-**Note:** Exactly one of `threshold`, `seed_index`, or `entropy_threshold` must be provided.
+**Note:** Exactly one mode must be specified: `threshold`, `seed_index`, `entropy_min`, or `entropy_max`.
 
 **Example:**
 
@@ -120,11 +231,18 @@ gapclean_2d_chunk(
     seed_index=0
 )
 
-# Entropy mode
+# Entropy mode - keep variable regions
 gapclean_2d_chunk(
     "sequences.txt",
     "cleaned_sequences.txt",
-    entropy_threshold=1.5
+    entropy_min=1.5
+)
+
+# Entropy mode - keep conserved regions
+gapclean_2d_chunk(
+    "sequences.txt",
+    "cleaned_sequences.txt",
+    entropy_max=1.5
 )
 
 # Custom chunk sizes
@@ -212,6 +330,12 @@ print(f"Entropy: {entropy}")  # Output: ~2.0
 
 ## Exception Classes
 
+All exception classes can be imported from the package root:
+
+```python
+from gapclean import GapCleanError, InputValidationError, AlignmentError
+```
+
 ### GapCleanError
 
 Base exception for GapClean errors.
@@ -228,6 +352,13 @@ Raised when input validation fails.
 class InputValidationError(GapCleanError)
 ```
 
+**Common causes:**
+- Invalid file paths
+- Invalid threshold values (not 0-100)
+- Invalid entropy thresholds
+- Invalid chunk sizes
+- Conflicting mode parameters
+
 ### AlignmentError
 
 Raised when alignment processing fails.
@@ -236,20 +367,29 @@ Raised when alignment processing fails.
 class AlignmentError(GapCleanError)
 ```
 
+**Common causes:**
+- Sequences of different lengths (not aligned)
+- Empty alignment files
+- Malformed FASTA format
+
 **Example:**
 
 ```python
-from gapclean.gapclean import gapclean_2d_chunk, AlignmentError
+from gapclean import clean_alignment, GapCleanError, AlignmentError
 
 try:
-    gapclean_2d_chunk("sequences.txt", "output.txt", threshold=75)
+    stats = clean_alignment("input.fa", "output.fa", threshold=75)
 except AlignmentError as e:
     print(f"Alignment error: {e}")
+except GapCleanError as e:
+    print(f"General error: {e}")
 ```
 
 ---
 
-## Complete Workflow Example
+## Complete Low-Level Workflow Example
+
+If you need manual control over temp files:
 
 ```python
 import tempfile
@@ -261,8 +401,8 @@ from gapclean.gapclean import (
     recombine_headers_and_sequences
 )
 
-def clean_alignment(input_fasta, output_fasta, threshold=75):
-    """Complete gap cleaning workflow."""
+def manual_clean_alignment(input_fasta, output_fasta, threshold=75):
+    """Manual gap cleaning workflow with low-level functions."""
     
     # Create temporary directory
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -293,8 +433,10 @@ def clean_alignment(input_fasta, output_fasta, threshold=75):
         )
 
 # Use it
-clean_alignment("input.fa", "cleaned.fa", threshold=75)
+manual_clean_alignment("input.fa", "cleaned.fa", threshold=75)
 ```
+
+**Note:** For most use cases, use the high-level `clean_alignment()` function instead, which handles all this automatically.
 
 ---
 
@@ -303,7 +445,7 @@ clean_alignment("input.fa", "cleaned.fa", threshold=75)
 ```python
 import gapclean
 
-print(gapclean.__version__)  # Output: 1.0.3
+print(gapclean.__version__)  # Output: 1.0.4
 ```
 
 ---
