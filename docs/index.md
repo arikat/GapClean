@@ -2,6 +2,9 @@
 
 Clean up large gappy multiple sequence alignments with memory-efficient processing.
 
+!!! info "Technical Paper Available"
+    Read the full technical paper describing GapClean's 2D chunking algorithm and benchmarks on million-sequence datasets. [View Technical Paper →](paper.md)
+
 ## Why GapClean?
 
 - **Memory Efficient**: Process massive alignments with 2D chunking algorithm

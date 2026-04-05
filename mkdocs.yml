@@ -57,6 +57,7 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Technical Paper: paper.md
   - Installation: installation.md
   - Quick Start: quickstart.md
   - Usage:
@@ -68,6 +69,5 @@ nav:
     - Performance Tuning: advanced/performance.md
     - Memory Management: advanced/memory.md
   - API Reference: api/reference.md
-  - Technical Paper: paper.md
   - Changelog: changelog.md
   - Contributing: contributing.md
