@@ -65,3 +65,9 @@ dmypy.json
 .idea/
 *.swp
 
+# MkDocs
+site/
+
+# Claude Code
+CLAUDE.md
+

@@ -1,0 +1,72 @@
+site_name: GapClean
+site_description: Clean up large gappy multiple sequence alignments
+site_author: Aarya Venkat, PhD
+site_url: https://arikat.github.io/GapClean/
+
+repo_name: arikat/GapClean
+repo_url: https://github.com/arikat/GapClean
+
+theme:
+  name: material
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Quick Start: quickstart.md
+  - Usage:
+    - Threshold Mode: usage/threshold-mode.md
+    - Seed Mode: usage/seed-mode.md
+    - Entropy Mode: usage/entropy-mode.md
+  - Advanced:
+    - 2D Chunking Algorithm: advanced/chunking.md
+    - Performance Tuning: advanced/performance.md
+    - Memory Management: advanced/memory.md
+  - API Reference: api/reference.md
+  - Changelog: changelog.md
+  - Contributing: contributing.md
