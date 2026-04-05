@@ -39,7 +39,3 @@ If you use GapClean in your research, please cite:
 Venkat, A. (2026). GapClean: Memory-efficient gap removal for multiple sequence alignments.
 https://github.com/arikat/GapClean
 ```
-
-### Source
-
-The LaTeX source for this paper is available in the [GitHub repository](https://github.com/arikat/GapClean/tree/main/paper/GapClean_paper).
