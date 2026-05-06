@@ -1,0 +1,2022 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Clean up large gappy multiple sequence alignments">
+      
+      
+        <meta name="author" content="Aarya Venkat, PhD">
+      
+      
+        <link rel="canonical" href="https://arikat.github.io/GapClean/advanced/performance/">
+      
+      
+        <link rel="prev" href="../chunking/">
+      
+      
+        <link rel="next" href="../memory/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Performance Tuning - GapClean</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#performance-tuning" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="GapClean" class="md-header__button md-logo" aria-label="GapClean" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            GapClean
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Performance Tuning
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/arikat/GapClean" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    arikat/GapClean
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../paper/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Technical Paper
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../quickstart/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Quick Start
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../usage/threshold-mode/" class="md-tabs__link">
+          
+  
+  
+  Usage
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../chunking/" class="md-tabs__link">
+          
+  
+  
+  Advanced
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../api/reference/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  API Reference
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../contributing/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Contributing
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="GapClean" class="md-nav__button md-logo" aria-label="GapClean" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    GapClean
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/arikat/GapClean" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    arikat/GapClean
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../paper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Paper
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Usage
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/threshold-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threshold Mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/seed-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seed Mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/entropy-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Entropy Mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chunking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Chunking Algorithm
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Tuning
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmarks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#speed-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Speed Optimization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Speed Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choose-the-right-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choose the Right Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimize-chunk-sizes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimize Chunk Sizes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Optimize Chunk Sizes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-speed-if-you-have-ram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Speed (If You Have RAM)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-memory-if-ram-is-limited" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Memory (If RAM is Limited)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-threshold-mode-when-possible" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Threshold Mode When Possible
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#memory-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Optimization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Memory Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#estimate-memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estimate Memory Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-very-large-alignments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Very Large Alignments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitor Memory Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#disk-io-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disk I/O Optimization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Disk I/O Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-fast-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Fast Storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reduce-disk-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reduce Disk I/O
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parallel-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallel Processing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#profiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Profiling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Profiling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#check-which-step-is-slow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check Which Step is Slow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-tips-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Tips Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Tips Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-maximum-speed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Maximum Speed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-minimum-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Minimum Memory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-balance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Balance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expected-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expected Performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Expected Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scaling-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scaling Behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparison-with-other-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison with Other Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-slow-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting Slow Performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting Slow Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#problem-very-slow-on-small-alignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problem: Very slow on small alignment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problem-slow-on-large-alignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problem: Slow on large alignment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problem-out-of-memory-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problem: Out of memory error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problem-taking-too-long" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problem: Taking too long
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmarks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#speed-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Speed Optimization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Speed Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choose-the-right-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choose the Right Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimize-chunk-sizes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimize Chunk Sizes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Optimize Chunk Sizes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-speed-if-you-have-ram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Speed (If You Have RAM)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-memory-if-ram-is-limited" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Memory (If RAM is Limited)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-threshold-mode-when-possible" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Threshold Mode When Possible
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#memory-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Optimization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Memory Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#estimate-memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estimate Memory Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-very-large-alignments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Very Large Alignments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitor Memory Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#disk-io-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disk I/O Optimization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Disk I/O Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-fast-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Fast Storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reduce-disk-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reduce Disk I/O
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parallel-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallel Processing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#profiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Profiling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Profiling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#check-which-step-is-slow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check Which Step is Slow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-tips-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Tips Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Tips Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-maximum-speed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Maximum Speed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-minimum-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Minimum Memory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-balance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Balance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expected-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expected Performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Expected Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scaling-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scaling Behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparison-with-other-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison with Other Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-slow-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting Slow Performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting Slow Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#problem-very-slow-on-small-alignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problem: Very slow on small alignment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problem-slow-on-large-alignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problem: Slow on large alignment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problem-out-of-memory-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problem: Out of memory error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problem-taking-too-long" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problem: Taking too long
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="performance-tuning">Performance Tuning</h1>
+<p>Optimize GapClean for your specific use case.</p>
+<h2 id="benchmarks">Benchmarks</h2>
+<p>Typical performance on modern hardware (M1 Mac, 16 GB RAM):</p>
+<table>
+<thead>
+<tr>
+<th>Alignment Size</th>
+<th>Sequences</th>
+<th>Positions</th>
+<th>Time</th>
+<th>Memory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Small</td>
+<td>100</td>
+<td>1,000</td>
+<td>&lt; 1s</td>
+<td>&lt; 100 MB</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>1,000</td>
+<td>10,000</td>
+<td>~5s</td>
+<td>&lt; 500 MB</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>10,000</td>
+<td>100,000</td>
+<td>~60s</td>
+<td>&lt; 2 GB</td>
+</tr>
+<tr>
+<td>Very Large</td>
+<td>100,000</td>
+<td>100,000</td>
+<td>~15min</td>
+<td>&lt; 5 GB</td>
+</tr>
+</tbody>
+</table>
+<h2 id="speed-optimization">Speed Optimization</h2>
+<h3 id="choose-the-right-mode">Choose the Right Mode</h3>
+<p>Fastest to slowest:</p>
+<ol>
+<li><strong>Seed mode</strong>: Only checks one sequence</li>
+<li><strong>Threshold mode</strong>: Counts gaps across all sequences</li>
+<li><strong>Entropy mode</strong>: Calculates entropy for each column</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Fastest</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>gapclean<span class="w"> </span>-i<span class="w"> </span>alignment.fa<span class="w"> </span>-o<span class="w"> </span>output.fa<span class="w"> </span>-s<span class="w"> </span><span class="m">0</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Fast</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>gapclean<span class="w"> </span>-i<span class="w"> </span>alignment.fa<span class="w"> </span>-o<span class="w"> </span>output.fa<span class="w"> </span>-t<span class="w"> </span><span class="m">75</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Slower (but still efficient)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>gapclean<span class="w"> </span>-i<span class="w"> </span>alignment.fa<span class="w"> </span>-o<span class="w"> </span>output.fa<span class="w"> </span>-e<span class="w"> </span><span class="m">1</span>.5
+</code></pre></div>
+<h3 id="optimize-chunk-sizes">Optimize Chunk Sizes</h3>
+<h4 id="for-speed-if-you-have-ram">For Speed (If You Have RAM)</h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Larger chunks = fewer iterations = faster</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>gapclean<span class="w"> </span>-i<span class="w"> </span>alignment.fa<span class="w"> </span>-o<span class="w"> </span>output.fa<span class="w"> </span>-t<span class="w"> </span><span class="m">75</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span>--row-chunk-size<span class="w"> </span><span class="m">10000</span><span class="w"> </span>--col-chunk-size<span class="w"> </span><span class="m">10000</span>
+</code></pre></div>
+<h4 id="for-memory-if-ram-is-limited">For Memory (If RAM is Limited)</h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Smaller chunks = more iterations = slower but less memory</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>gapclean<span class="w"> </span>-i<span class="w"> </span>alignment.fa<span class="w"> </span>-o<span class="w"> </span>output.fa<span class="w"> </span>-t<span class="w"> </span><span class="m">75</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span>--row-chunk-size<span class="w"> </span><span class="m">1000</span><span class="w"> </span>--col-chunk-size<span class="w"> </span><span class="m">1000</span>
+</code></pre></div>
+<h3 id="use-threshold-mode-when-possible">Use Threshold Mode When Possible</h3>
+<p>If your goal is just to remove gappy columns, threshold mode is faster than entropy mode:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Instead of this (slower):</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>gapclean<span class="w"> </span>-i<span class="w"> </span>alignment.fa<span class="w"> </span>-o<span class="w"> </span>output.fa<span class="w"> </span>-e<span class="w"> </span><span class="m">0</span>.1
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Consider this (faster):</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>gapclean<span class="w"> </span>-i<span class="w"> </span>alignment.fa<span class="w"> </span>-o<span class="w"> </span>output.fa<span class="w"> </span>-t<span class="w"> </span><span class="m">75</span>
+</code></pre></div>
+<h2 id="memory-optimization">Memory Optimization</h2>
+<h3 id="estimate-memory-usage">Estimate Memory Usage</h3>
+<p>Peak memory ≈ row_chunk_size × col_chunk_size × 2 bytes</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># 5000 × 5000 × 2 = 50 MB peak memory</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>gapclean<span class="w"> </span>-i<span class="w"> </span>alignment.fa<span class="w"> </span>-o<span class="w"> </span>output.fa<span class="w"> </span>-t<span class="w"> </span><span class="m">75</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span>--row-chunk-size<span class="w"> </span><span class="m">5000</span><span class="w"> </span>--col-chunk-size<span class="w"> </span><span class="m">5000</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1"># 1000 × 1000 × 2 = 2 MB peak memory</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>gapclean<span class="w"> </span>-i<span class="w"> </span>alignment.fa<span class="w"> </span>-o<span class="w"> </span>output.fa<span class="w"> </span>-t<span class="w"> </span><span class="m">75</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">  </span>--row-chunk-size<span class="w"> </span><span class="m">1000</span><span class="w"> </span>--col-chunk-size<span class="w"> </span><span class="m">1000</span>
+</code></pre></div>
+<h3 id="for-very-large-alignments">For Very Large Alignments</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># 100,000 sequences × 500,000 positions</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1"># Use conservative chunk sizes</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>gapclean<span class="w"> </span>-i<span class="w"> </span>huge.fa<span class="w"> </span>-o<span class="w"> </span>cleaned.fa<span class="w"> </span>-t<span class="w"> </span><span class="m">75</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span>--row-chunk-size<span class="w"> </span><span class="m">2000</span><span class="w"> </span>--col-chunk-size<span class="w"> </span><span class="m">2000</span>
+</code></pre></div>
+<p>Memory usage: ~8 MB peak (vs. 100 GB without chunking!)</p>
+<h3 id="monitor-memory-usage">Monitor Memory Usage</h3>
+<p>On Unix systems:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Run GapClean and monitor memory</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>/usr/bin/time<span class="w"> </span>-v<span class="w"> </span>gapclean<span class="w"> </span>-i<span class="w"> </span>alignment.fa<span class="w"> </span>-o<span class="w"> </span>output.fa<span class="w"> </span>-t<span class="w"> </span><span class="m">75</span>
+</code></pre></div></p>
+<p>On macOS:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>/usr/bin/time<span class="w"> </span>-l<span class="w"> </span>gapclean<span class="w"> </span>-i<span class="w"> </span>alignment.fa<span class="w"> </span>-o<span class="w"> </span>output.fa<span class="w"> </span>-t<span class="w"> </span><span class="m">75</span>
+</code></pre></div></p>
+<h2 id="disk-io-optimization">Disk I/O Optimization</h2>
+<h3 id="use-fast-storage">Use Fast Storage</h3>
+<ul>
+<li><strong>SSD</strong>: 5-10× faster than HDD</li>
+<li><strong>NVMe SSD</strong>: 2× faster than SATA SSD</li>
+<li><strong>RAM disk</strong>: Fastest (for temp files)</li>
+</ul>
+<h3 id="reduce-disk-io">Reduce Disk I/O</h3>
+<p>GapClean uses temporary files. Set temp directory to fast storage:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Linux/macOS</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TMPDIR</span><span class="o">=</span>/path/to/fast/ssd
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>gapclean<span class="w"> </span>-i<span class="w"> </span>alignment.fa<span class="w"> </span>-o<span class="w"> </span>output.fa<span class="w"> </span>-t<span class="w"> </span><span class="m">75</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="c1"># Windows</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="nb">set</span><span class="w"> </span><span class="nv">TEMP</span><span class="o">=</span>C:<span class="se">\f</span>ast<span class="se">\s</span>sd
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>gapclean<span class="w"> </span>-i<span class="w"> </span>alignment.fa<span class="w"> </span>-o<span class="w"> </span>output.fa<span class="w"> </span>-t<span class="w"> </span><span class="m">75</span>
+</code></pre></div>
+<h2 id="parallel-processing">Parallel Processing</h2>
+<p>Current version: Serial processing</p>
+<p>For multiple alignments, parallelize externally:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># GNU Parallel</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>parallel<span class="w"> </span>-j<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="s1">&#39;gapclean -i {} -o {.}_cleaned.fa -t 75&#39;</span><span class="w"> </span>:::<span class="w"> </span>*.fa
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1"># Simple shell loop with background jobs</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="k">for</span><span class="w"> </span>file<span class="w"> </span><span class="k">in</span><span class="w"> </span>*.fa<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">  </span>gapclean<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="w"> </span>-o<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">file</span><span class="p">%.fa</span><span class="si">}</span><span class="s2">_cleaned.fa&quot;</span><span class="w"> </span>-t<span class="w"> </span><span class="m">75</span><span class="w"> </span><span class="p">&amp;</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="k">done</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="nb">wait</span>
+</code></pre></div>
+<h2 id="profiling">Profiling</h2>
+<h3 id="check-which-step-is-slow">Check Which Step is Slow</h3>
+<p>GapClean shows progress for each step:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>[GAPCLEAN] (1) Flattening input FASTA...     ← Fast
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>[GAPCLEAN] (2) Splitting headers...           ← Fast
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>[GAPCLEAN] (3) It&#39;s Gappin&#39; Time...
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>  [GAPCLEAN] Counting gaps: 100%              ← May be slow for large alignments
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>  [GAPCLEAN] Cleaning gaps: 100%              ← May be slow for large alignments
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>[GAPCLEAN] (4) Stitching back headers...      ← Fast
+</code></pre></div>
+<h2 id="performance-tips-summary">Performance Tips Summary</h2>
+<h3 id="for-maximum-speed">For Maximum Speed</h3>
+<ol>
+<li>Use seed mode if possible</li>
+<li>Use large chunk sizes (if RAM allows)</li>
+<li>Use SSD storage</li>
+<li>Process multiple files in parallel</li>
+</ol>
+<h3 id="for-minimum-memory">For Minimum Memory</h3>
+<ol>
+<li>Use small chunk sizes (1000 × 1000)</li>
+<li>Process one file at a time</li>
+<li>Close other applications</li>
+</ol>
+<h3 id="for-balance">For Balance</h3>
+<ol>
+<li>Use default settings (5000 × 5000)</li>
+<li>Monitor first run to adjust if needed</li>
+<li>Threshold mode for most use cases</li>
+</ol>
+<h2 id="expected-performance">Expected Performance</h2>
+<h3 id="scaling-behavior">Scaling Behavior</h3>
+<ul>
+<li><strong>Sequences</strong>: Linear scaling O(n)</li>
+<li><strong>Positions</strong>: Linear scaling O(m)</li>
+<li><strong>Overall</strong>: O(n × m) for threshold/entropy modes</li>
+</ul>
+<p>Doubling alignment size ≈ doubles runtime (very predictable!)</p>
+<h3 id="comparison-with-other-tools">Comparison with Other Tools</h3>
+<p>GapClean is competitive with specialized tools:</p>
+<ul>
+<li>Faster than pure Python tools (uses NumPy)</li>
+<li>Comparable to C-based tools for typical alignments</li>
+<li>Better memory efficiency than most alternatives</li>
+</ul>
+<h2 id="troubleshooting-slow-performance">Troubleshooting Slow Performance</h2>
+<h3 id="problem-very-slow-on-small-alignment">Problem: Very slow on small alignment</h3>
+<p><strong>Likely cause</strong>: Disk I/O (slow storage)</p>
+<p><strong>Solution</strong>: Move files to SSD or use RAM disk</p>
+<h3 id="problem-slow-on-large-alignment">Problem: Slow on large alignment</h3>
+<p><strong>Likely cause</strong>: Normal behavior for large data</p>
+<p><strong>Solutions</strong>:
+- Increase chunk sizes if you have RAM
+- Use threshold mode instead of entropy mode
+- Ensure you're using SSD storage</p>
+<h3 id="problem-out-of-memory-error">Problem: Out of memory error</h3>
+<p><strong>Solution</strong>: Reduce chunk sizes</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>gapclean<span class="w"> </span>-i<span class="w"> </span>alignment.fa<span class="w"> </span>-o<span class="w"> </span>output.fa<span class="w"> </span>-t<span class="w"> </span><span class="m">75</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span>--row-chunk-size<span class="w"> </span><span class="m">500</span><span class="w"> </span>--col-chunk-size<span class="w"> </span><span class="m">500</span>
+</code></pre></div>
+<h3 id="problem-taking-too-long">Problem: Taking too long</h3>
+<p><strong>Check</strong>: Is your alignment unexpectedly large?</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Count sequences</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>grep<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;^&gt;&quot;</span><span class="w"> </span>alignment.fa
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="c1"># Check file size</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>ls<span class="w"> </span>-lh<span class="w"> </span>alignment.fa
+</code></pre></div>
+<p>Expected time: ~1 minute per 1,000,000,000 characters on modern hardware.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
