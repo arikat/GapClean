@@ -18,19 +18,14 @@ GapClean is a memory-efficient tool for cleaning gappy multiple sequence alignme
 
 **NEW in v1.0.5:**
 - **Multi-format support**: Stockholm, Clustal, PHYLIP, FASTA
-- Auto-detect input format (no flags needed!)
+- Auto-detect input format
 - Convert between formats seamlessly
 - **Works with Pfam alignments** (.sto files)
 
-**Also in v1.0.4:**
+**New in v1.0.4:**
 - Simple Python API for notebooks and scripts
 - Auto-managed temp files (no manual cleanup!)
 - Returns statistics dict with metrics and timing
-
-**And v1.0.3:**
-- Entropy-based gap removal mode
-- Pure Python implementation (Windows compatible!)
-- Comprehensive testing and documentation
 
 ## Features
 
